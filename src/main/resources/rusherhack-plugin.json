@@ -1,5 +1,5 @@
 {
-  "Plugin-Class": "org.example.RemoteControle",
+  "Plugin-Class": "org.kybe.RemoteControle",
   "Name": "Remote Control",
   "Version": "${plugin_version}",
   "Description": "Remote Control Plugin",
