@@ -1,6 +1,6 @@
-package org.example.CommandHandler;
+package org.kybe.CommandHandler;
 
-import org.example.window.RemoteConsole;
+import org.kybe.window.RemoteConsole;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -15,13 +15,24 @@ import java.util.TimerTask;
 public class Server {
 
     public static void handle(String command, RemoteConsole remoteConsole) {
-        if (command.equalsIgnoreCase("start")) {
+        if (command.equalsIgnoreCase(".start")) {
             remoteConsole.config.running = true;
             enableServerSocket(remoteConsole);
             remoteConsole.messageView.add("Server started", Color.green.getRGB());
-        } else if (command.equalsIgnoreCase("stop")) {
+        } else if (command.equalsIgnoreCase(".stop")) {
             remoteConsole.config.running = false;
             remoteConsole.messageView.add("Server stopped initialized", Color.green.getRGB());
+        } else if (command.equalsIgnoreCase(".info")) {
+            remoteConsole.config.commandSendQueue.add(command);
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    for (String response : remoteConsole.config.responseQueue) {
+                        remoteConsole.messageView.add("Response: " + response, Color.green.getRGB());
+                    }
+                }
+            }, 1000);
         } else {
             remoteConsole.config.commandSendQueue.add(command);
         }
@@ -43,11 +54,14 @@ class ServerThread implements Runnable {
     }
 
     public void sendCommands() {
-        for (ConnectionHandler connection : connections) {
-            while (!remoteConsole.config.commandSendQueue.isEmpty()) {
-                remoteConsole.messageView.add("Sending command..", Color.green.getRGB());
-                connection.sendCommand(remoteConsole.config.commandSendQueue.remove(0));
-                remoteConsole.messageView.add("Command sent done", Color.green.getRGB());
+        while (!remoteConsole.config.commandSendQueue.isEmpty()) {
+            String command = remoteConsole.config.commandSendQueue.remove(0);
+            for (ConnectionHandler connection : connections) {
+                remoteConsole.messageView.add("Sending command: " + command, Color.green.getRGB());
+                String response = connection.sendCommand(command);
+                if (command.equalsIgnoreCase(".info")) {
+                    remoteConsole.messageView.add("Response: " + response, Color.green.getRGB());
+                }
             }
         }
     }
@@ -80,6 +94,7 @@ class ServerThread implements Runnable {
             serverSocket.close();
             remoteConsole.messageView.add("Server stopped", Color.green.getRGB());
         } catch (Exception e) {
+            remoteConsole.config.running = true;
             remoteConsole.messageView.add("Error: " + e.getMessage(), Color.red.getRGB());
         }
     }
@@ -101,26 +116,22 @@ class ServerThread implements Runnable {
                 out = new PrintWriter(socket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             } catch (Exception e) {
+                remoteConsole.config.running = true;
                 remoteConsole.messageView.add("Error: " + e.getMessage(), Color.red.getRGB());
             }
         }
 
-        public void sendCommand(String command) {
-            remoteConsole.messageView.add("Command sending: " + command, Color.white.getRGB());
+        public String sendCommand(String command) {
             try {
                 out.println(command);
+                if (command.equalsIgnoreCase(".info")) {
+                    return in.readLine();
+                } else {
+                    return "";
+                }
             } catch (Exception e) {
                 remoteConsole.messageView.add("Error: " + e.getMessage(), Color.red.getRGB());
-            }
-            remoteConsole.messageView.add("Command sent: " + command, Color.white.getRGB());
-        }
-
-        public void receiveResponse() {
-            try {
-                String response = in.readLine();
-                remoteConsole.messageView.add("Response received: " + response, Color.white.getRGB());
-            } catch (Exception e) {
-                remoteConsole.messageView.add("Error: " + e.getMessage(), Color.red.getRGB());
+                return "";
             }
         }
     }

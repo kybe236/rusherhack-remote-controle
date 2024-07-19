@@ -1,9 +1,7 @@
-package org.example.window;
+package org.kybe.window;
 
-import org.example.CommandHandler.Both;
-import org.example.CommandHandler.Client;
-import org.example.CommandHandler.Server;
-import org.example.Config;
+import org.kybe.CommandHandler.Both;
+import org.kybe.Config;
 import org.rusherhack.client.api.RusherHackAPI;
 import org.rusherhack.client.api.feature.window.ResizeableWindow;
 import org.rusherhack.client.api.render.graphic.TextureGraphic;

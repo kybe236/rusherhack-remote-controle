@@ -1,18 +1,18 @@
-package org.example.CommandHandler;
+package org.kybe.CommandHandler;
 
-import org.example.Config;
+import org.kybe.Config;
 
 public class Both {
-    public static void handle(String command, org.example.window.RemoteConsole remoteConsole) {
+    public static void handle(String command, org.kybe.window.RemoteConsole remoteConsole) {
         Config config = remoteConsole.config;
 
-        if (command.equalsIgnoreCase("server true") || command.equalsIgnoreCase("server 1")) {
+        if (command.equalsIgnoreCase(".server true") || command.equalsIgnoreCase(".server 1")) {
             config.Server = true;
             remoteConsole.messageView.add("Server mode enabled", java.awt.Color.green.getRGB());
-        } else if (command.equalsIgnoreCase("server false") || command.equalsIgnoreCase("server 0")) {
+        } else if (command.equalsIgnoreCase(".server false") || command.equalsIgnoreCase(".server 0")) {
             config.Server = false;
             remoteConsole.messageView.add("Server mode disabled", java.awt.Color.red.getRGB());
-        } else if (command.toLowerCase().startsWith("serverip")) {
+        } else if (command.toLowerCase().startsWith(".ip")) {
             String[] parts = command.split(" ");
             if (parts.length > 1) {
                 config.Ip = parts[1];
@@ -20,7 +20,7 @@ public class Both {
             } else {
                 remoteConsole.messageView.add("Invalid IP command format", java.awt.Color.red.getRGB());
             }
-        } else if (command.toLowerCase().startsWith("port")) {
+        } else if (command.toLowerCase().startsWith(".port")) {
             String[] parts = command.split(" ");
             if (parts.length > 1) {
                 try {
