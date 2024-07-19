@@ -1,0 +1,12 @@
+{
+  "Plugin-Class": "org.example.RemoteControle",
+  "Name": "Remote Control",
+  "Version": "${plugin_version}",
+  "Description": "Remote Control Plugin",
+  "Authors": [
+    "kybe236"
+  ],
+  "Minecraft-Versions": [
+    "1.20.4"
+  ]
+}
